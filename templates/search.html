@@ -1,0 +1,23 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+Search
+{% endblock title %}
+
+{% block content %}
+<form method="get">
+	{{ filter.form }}
+	<input type="submit" value="Search">
+</form>
+{% for post in filter.qs %}
+<a href="/news/{{ post.id }}">
+	<div>
+		<h5>{{ post.title | censor }}</h5>
+		<div>{{ post.content | truncatechars:50 | censor }}</div>
+		<div class="small">{{ post.posted | date:"l d-m-Y H:i" }}</div>
+	</div>
+</a>
+{% endfor %}
+{% endblock content %}

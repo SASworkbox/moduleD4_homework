@@ -1,0 +1,85 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+{{ time_now }}
+<h1>Все новости: ({{ news|length }})</h1>
+{% if is_paginated %}
+
+<!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+{% if page_obj.has_previous %}
+<a href="?page=1">First</a>
+<a href="?page={{ page_obj.previous_page_number }}">---</a>
+{% endif %}
+
+<!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+{% for num in page_obj.paginator.page_range %}
+{% if page_obj.number == num %}
+<a>{{ num }}</a>
+{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}<a href="?page={{ num }}">{{ num }}</a>
+	{% endif %}
+	{% endfor %}
+
+	<!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+	{% if page_obj.has_next %}
+	<a href="?page={{ page_obj.next_page_number }}">---</a>
+	<a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+	{% endif %}
+
+	{% endif %}
+	<hr>
+	<a href="/news/{{ post.id }}"></a>
+
+	<table>
+		<tr>
+			<td>
+				<h2 align="center">Заголовок</h2>
+				<hr>
+			</td>
+			<td>
+				<h2 align="center">Статья</h2>
+				<hr>
+			</td>
+			<td>
+				<h2 align="center">Время создания</h2>
+				<hr>
+			</td>
+			<td>
+				<h2 align="center">Редактировать/Удалить</h2>
+				<hr>
+			</td>
+		</tr>
+		{% if news %}
+
+		{% for post in news %}
+		<tr>
+			<td align="center" width="25%">
+				{{ post.title|censor }}
+			</td>
+			<td align="center" width="25%">
+				{{ post.content | truncatechars:50 | censor }}
+			</td>
+			<td align="center" width="25%">
+				{{ post.posted | date:"d-m-Y H:i" }}
+			</td>
+			<td align="center" width="25%">
+				<a href="{% url 'post_edit' post.id %}">Редактировать</a>
+				<a href="{% url 'post_delete' post.id %}">Удалить</a>
+			</td>
+		</tr>
+
+		{% endfor %}
+
+		{% else %}
+		<h2>Новостей нет!</h2>
+		{% endif %}
+	</table>
+	<!-- Тут блок -->
+
+
+	{% endblock content %}
